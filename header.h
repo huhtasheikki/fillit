@@ -6,14 +6,14 @@
 /*   By: hhuhtane <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/27 09:43:47 by hhuhtane          #+#    #+#             */
-/*   Updated: 2019/12/11 17:36:41 by epalomak         ###   ########.fr       */
+/*   Updated: 2019/12/16 10:14:57 by epalomak         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef HEADER_H
 # define HEADER_H
 
-# define BUFF_SIZE 32
+# define BUFF_SIZE 20
 # define MAX_FD 4864
 
 # include <unistd.h>
@@ -40,6 +40,7 @@ int					ft_check_tetri(char *str);
 int					ft_form_tetrostr(int fd, char *ptr, char **str);
 int					ft_check_n_form(int fd, t_list2 **head);
 int					get_next_line(const int fd, char **line);
+int					ft_free_line(char *line);
 
 void				ft_print_square(char **square);
 void				ft_move_list(t_list2 *new);

@@ -6,11 +6,31 @@
 /*   By: epalomak <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/11 15:53:13 by epalomak          #+#    #+#             */
-/*   Updated: 2019/12/13 11:56:12 by hhuhtane         ###   ########.fr       */
+/*   Updated: 2019/12/18 17:30:46 by hhuhtane         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.h"
+
+int		ft_count_block(char *str)
+{
+	int		i;
+	int		c;
+
+	i = 0;
+	c = 0;
+	while (str[i])
+	{
+		if (str[i] != '.' && str[i] != '#')
+			return (-1);
+		if (str[i] == '#')
+			c++;
+		i++;
+	}
+	if (c != 4 || i != 16)
+		return (-1);
+	return (0);
+}
 
 int		ft_check_tetri(char *str)
 {
@@ -19,17 +39,17 @@ int		ft_check_tetri(char *str)
 
 	i = 0;
 	count = 0;
-	while (i < 16)
+	if (ft_count_block(str) == -1)
+		return (-1);
+	while (str[i])
 	{
-		if (str[i] != '.' && str[i] != '#')
-			return (-1);
 		if (str[i] == '#' && str[i + 1] == '#' && (i != 3 && i != 7 && i != 11)
-			&& i + 1 <= 16)
+				&& i + 1 < 16)
 			count++;
 		if (str[i] == '#' && str[i - 1] == '#' && (i != 4 && i != 8 && i != 12)
-			&& i - 1 >= 0)
+				&& i - 1 >= 0)
 			count++;
-		if (str[i] == '#' && str[i + 4] == '#' && i + 4 <= 16)
+		if (str[i] == '#' && str[i + 4] == '#' && i < 12 && i + 4 < 16)
 			count++;
 		if (str[i] == '#' && str[i - 4] == '#' && i - 4 >= 0)
 			count++;
@@ -63,38 +83,24 @@ int		ft_form_tetrostr(int fd, char *ptr, char **str)
 		free(ptr);
 		free(str2);
 	}
+	if (i == 3 || ft_strlen(str2) != 0)
+		return (ft_free_line(str2));
 	free(str2);
-	if (i == 3)
-		return (-1);
 	return (0);
 }
 
-int		ft_validate(int fd, int count, char *ptr, char *line)
+int		ft_free_line(char *line)
 {
-	int		rt;
-
-	rt = 1;
-	if ((rt = ft_form_tetrostr(fd, ptr, &line)) == -1)
-	{
-//		free(line);
-		return (-1);
-	}
-	if (rt == 0 && ft_check_tetri(line) == -1)
-//		return (-1);
-	if (ft_check_tetri(line) == -1 || count > 25)
-	{
-//		free(line);
-		return (-1);
-	}
-	return (0);
+	free(line);
+	return (-1);
 }
 
 int		ft_check_n_form(int fd, t_list2 **head)
 {
+	int		rt;
 	char	*ptr;
 	char	*line;
 	int		count;
-	int		rt;
 
 	rt = 1;
 	ptr = NULL;
@@ -102,8 +108,12 @@ int		ft_check_n_form(int fd, t_list2 **head)
 	while (rt > 0)
 	{
 		line = ft_strnew(0);
-		if ((rt = ft_validate(fd, count, ptr, line) == -1))
+		if ((rt = ft_form_tetrostr(fd, ptr, &line)) == -1)
+			return (ft_free_line(line));
+		if (rt == 0 && line[0] == '\0')
 			return (-1);
+		if (ft_check_tetri(line) == -1 || count > 25)
+			return (ft_free_line(line));
 		ft_list(head, line, count++);
 		free(line);
 	}
